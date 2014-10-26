@@ -61,7 +61,7 @@
      (define (solve-constraints!)
        (when morph
 	 (define cs {constraints morph base-constraints})
-	 (solve-constraints/timeout! cs 100)))
+	 (time (solve-constraints/timeout! cs 100))))
 
      (define/override (on-size w h)
        (set-point-x! current-size w)
