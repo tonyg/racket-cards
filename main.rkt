@@ -14,10 +14,6 @@
 		   [width 480]
 		   [height 700]))
 
-(define menu-bar (new menu-bar% [parent frame]))
-(define edit-menu (new menu% [label "Edit"] [parent menu-bar]))
-(append-editor-operation-menu-items edit-menu #f)
-
 (define mouse-point (readonly-view (point 0 0)))
 
 (define view%
