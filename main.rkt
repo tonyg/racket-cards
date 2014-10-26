@@ -21,14 +21,13 @@
 (define mouse-point (readonly-view (point 0 0)))
 
 (define view%
-  (class canvas%
+  (class (rectangle-dimensions-mixin canvas%)
+    (inherit-field TL BR)
     (super-new)
 
     (define morph #f)
     (define active-morph #f)
-    (define current-size (point {get-width this} {get-height this}))
-    (field [TL (point 0 0)]
-	   [BR (point-copy current-size)])
+    (define current-size (point 0 0))
 
     (define {add! self m}
       (when (not (eq? morph m))
@@ -86,19 +85,11 @@
 
 (define v (new view% [parent frame]))
 (define g (new group-morph% [parent v]))
-(let ((r (new rectangle-morph% [parent g])))
-  {add-constraint! g (difference-constraint (alias [value (get-field TL v) x])
-  					    (alias [value (get-field TL r) x])
-  					    (box 40))}
-  {add-constraint! g (difference-constraint (alias [value (get-field TL v) y])
-  					    (alias [value (get-field TL r) y])
-  					    (box 20))}
+(let ((r1 (new rectangle-morph% [parent g]))
+      #;(r2 (new rectangle-morph% [parent g])))
 
-  ;; {add-constraint! g (heading-constraint (get-field TL v) (get-field TL r) (/ pi 4))}
-  ;; {add-constraint! g (length-constraint (get-field TL v) (get-field TL r) 20)}
-
-  {add-constraint! g (heading-constraint (get-field BR r) (get-field BR v) (/ pi 4))}
-  {add-constraint! g (length-constraint (get-field BR v) (get-field BR r) 20)}
+  {add-constraint! g (point-difference-constraint {point-TL v} {point-TL r1} (point 32 16))}
+  {add-constraint! g (point-difference-constraint {point-BR r1} {point-BR v} (point 16 16))}
 
   (void))
 

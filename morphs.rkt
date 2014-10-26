@@ -9,6 +9,7 @@
 
 (provide morph%
 	 group-morph%
+	 rectangle-dimensions-mixin
 	 rectangle-morph%)
 
 (define morph%
@@ -81,19 +82,34 @@
       costume*)
     ))
 
-(define rectangle-morph%
-  (class morph%
+(define rectangle-dimensions-mixin
+  (mixin () ()
     (super-new)
 
     (field [TL (point 0 0)]
-	   [BR (point 0 0)]
-	   [TR (alias [x BR x] [y TL y])]
-	   [BL (alias [x TL x] [y BR y])]
-	   [CC (point-median TL BR)]
-	   [TC (alias [x CC x] [y TL y])]
-	   [BC (alias [x CC x] [y BR y])]
-	   [CL (alias [x TL x] [y CC y])]
-	   [CR (alias [x BR x] [y CC y])])
+	   [BR (point 0 0)])
+
+    (define {point-TL self} TL)
+    (define {point-BR self} BR)
+    (define {point-TR self} (alias [x BR x] [y TL y]))
+    (define {point-BL self} (alias [x TL x] [y BR y]))
+    (define {point-CC self} (point-median TL BR))
+    (define {point-TC self} (alias [x {point-CC self} x] [y TL y]))
+    (define {point-BC self} (alias [x {point-CC self} x] [y BR y]))
+    (define {point-CL self} (alias [x TL x] [y {point-CC self} y]))
+    (define {point-CR self} (alias [x BR x] [y {point-CC self} y]))
+
+    (define {value-L self} (alias [value TL x]))
+    (define {value-R self} (alias [value BR x]))
+    (define {value-T self} (alias [value TL y]))
+    (define {value-B self} (alias [value BR y]))
+    (define {value-HC self} (alias [value {point-CC self} x]))
+    (define {value-VC self} (alias [value {point-CC self} y]))))
+
+(define rectangle-morph%
+  (class (rectangle-dimensions-mixin morph%)
+    (inherit-field TL BR)
+    (super-new)
 
     (define brush-box (box {find-or-create-brush the-brush-list "yellow" 'solid}))
 
