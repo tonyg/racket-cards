@@ -135,11 +135,8 @@
   {add-constraint! g (equivalence-constraint {point-TL r1} {point-BR r1}
   					     {point-TL r2} {point-BR r2})}
 
-  {add-constraint! g (point-difference-constraint {point-CC r3} {point-CC v} (point 0 0))}
-
-  {add-constraint! g (point-difference-constraint {point-TL r3} {point-BR r3} (point 100 200))}
-  ;; {add-constraint! g (equivalence-constraint {point-TL r1} {point-BR r1}
-  ;; 					     {point-TL r3} {point-BR r3})}
+  (pin! {point-CC v} {point-CC} r3)
+  (pin! {point-TL r3} #:offset (point 100 200) {point-BR} r3)
 
   (void))
 
