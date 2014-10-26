@@ -81,6 +81,27 @@
        (when active-morph {handle-event active-morph evt}))
      )))
 
+(define (general-abut! prev-anchor-getter next-anchor-getter spacing morphs)
+  (define spacing-box (box spacing))
+  (when (pair? morphs)
+    (define container {parent (car morphs)})
+    (let loop ((prev (car morphs)) (rest (cdr morphs)))
+      (when (pair? rest)
+	(define next (car rest))
+	{add-constraint! container (scalar-difference-constraint (prev-anchor-getter prev)
+								 (next-anchor-getter next)
+								 spacing-box)}
+	(loop next (cdr rest))))))
+
+(define (abut-horizontally! #:spacing [spacing 0] . morphs)
+  (general-abut! {value-R} {value-L} spacing morphs))
+
+(define (abut-vertically! #:spacing [spacing 0] . morphs)
+  (general-abut! {value-B} {value-T} spacing morphs))
+
+(define (align! anchor-getter . morphs)
+  (general-abut! anchor-getter anchor-getter 0 morphs))
+
 (define v (new view% [parent frame]))
 (define g (new group-morph% [parent v]))
 (let ((r1 (new rectangle-morph% [parent g]))
@@ -91,9 +112,9 @@
   {add-constraint! g (point-difference-constraint {point-BR r2} {point-BR v} (point 20 20))}
   ;; {add-constraint! g (point-difference-constraint {point-BR r1} {point-BR v} (point 16 16))}
 
-  {add-constraint! g (scalar-difference-constraint {value-L r1} {value-L r2} (box 0))}
-  {add-constraint! g (scalar-difference-constraint {value-R r1} {value-R r2} (box 0))}
-  {add-constraint! g (scalar-difference-constraint {value-B r1} {value-T r2} (box 0))}
+  (align! {value-L} r1 r2)
+  (align! {value-R} r1 r2)
+  (abut-vertically! r1 r2)
 
   ;; {add-constraint! g (scalar-difference-constraint {value-T r1} {value-B r1} (box 50))}
   ;; {add-constraint! g (scalar-difference-constraint {value-T r2} {value-B r2} (box 50))}
