@@ -84,10 +84,10 @@
        (when active-morph {handle-event active-morph evt}))
      )))
 
-(define (general-abut! prev-anchor-getter next-anchor-getter spacing morphs)
+(define (general-abut! prev-anchor-getter next-anchor-getter spacing holder morphs)
   (define spacing-box (box spacing))
   (when (pair? morphs)
-    (define container {parent (car morphs)})
+    (define container (or holder {parent (car morphs)}))
     (let loop ((prev (car morphs)) (rest (cdr morphs)))
       (when (pair? rest)
 	(define next (car rest))
@@ -96,14 +96,14 @@
 								 spacing-box)}
 	(loop next (cdr rest))))))
 
-(define (abut-horizontally! #:spacing [spacing 0] . morphs)
-  (general-abut! {value-R} {value-L} spacing morphs))
+(define (abut-horizontally! #:spacing [spacing 0] #:constraint-holder [holder #f] . morphs)
+  (general-abut! {value-R} {value-L} spacing holder morphs))
 
-(define (abut-vertically! #:spacing [spacing 0] . morphs)
-  (general-abut! {value-B} {value-T} spacing morphs))
+(define (abut-vertically! #:spacing [spacing 0] #:constraint-holder [holder #f] . morphs)
+  (general-abut! {value-B} {value-T} spacing holder morphs))
 
-(define (align! anchor-getter . morphs)
-  (general-abut! anchor-getter anchor-getter 0 morphs))
+(define (align! #:constraint-holder [holder #f] anchor-getter . morphs)
+  (general-abut! anchor-getter anchor-getter 0 holder morphs))
 
 (define v (new view% [parent frame]))
 (define g (new group-morph% [parent v]))
