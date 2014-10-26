@@ -52,6 +52,7 @@
        (when morph
 	 (solve-constraints!)
 	 (define dc {get-dc this})
+	 {set-smoothing dc 'smoothed}
 	 (define costume {costume morph})
 	 {draw costume dc}))
 
