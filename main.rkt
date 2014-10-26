@@ -84,17 +84,22 @@
        (when active-morph {handle-event active-morph evt}))
      )))
 
-(define (general-abut! prev-anchor-getter next-anchor-getter spacing holder morphs)
-  (define spacing-box (box spacing))
+(define (general-chain! constraint-maker holder morphs)
   (when (pair? morphs)
     (define container (or holder {parent (car morphs)}))
     (let loop ((prev (car morphs)) (rest (cdr morphs)))
       (when (pair? rest)
 	(define next (car rest))
-	{add-constraint! container (scalar-difference-constraint (prev-anchor-getter prev)
-								 (next-anchor-getter next)
-								 spacing-box)}
+	{add-constraint! container (constraint-maker prev next)}
 	(loop next (cdr rest))))))
+
+(define (general-abut! prev-anchor-getter next-anchor-getter spacing holder morphs)
+  (define spacing-box (box spacing))
+  (general-chain! (lambda (p n) (scalar-difference-constraint (prev-anchor-getter p)
+							      (next-anchor-getter n)
+							      spacing-box))
+		  holder
+		  morphs))
 
 (define (abut-horizontally! #:spacing [spacing 0] #:constraint-holder [holder #f] . morphs)
   (general-abut! {value-R} {value-L} spacing holder morphs))
@@ -105,15 +110,20 @@
 (define (align! #:constraint-holder [holder #f] anchor-getter . morphs)
   (general-abut! anchor-getter anchor-getter 0 holder morphs))
 
+(define (pin! #:offset [offset (point 0 0)] #:constraint-holder [holder #f]
+	      target anchor-getter . morphs)
+  (for [(morph (in-list morphs))]
+    {add-constraint! (or holder {parent morph})
+		     (point-difference-constraint target (anchor-getter morph) offset)}))
+
 (define v (new view% [parent frame]))
 (define g (new group-morph% [parent v]))
 (let ((r1 (new rectangle-morph% [parent g]))
       (r2 (new rectangle-morph% [parent g]))
       (r3 (new rectangle-morph% [parent g])))
 
-  {add-constraint! g (point-difference-constraint {point-TL v} {point-TL r1} (point 20 20))}
-  {add-constraint! g (point-difference-constraint {point-BR r2} {point-BR v} (point 20 20))}
-  ;; {add-constraint! g (point-difference-constraint {point-BR r1} {point-BR v} (point 16 16))}
+  (pin! {point-TL v} #:offset (point 20 20) {point-TL} r1)
+  (pin! {point-BR v} #:offset (point -20 -20) {point-BR} r2)
 
   (align! {value-L} r1 r2)
   (align! {value-R} r1 r2)
