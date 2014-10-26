@@ -112,7 +112,7 @@
      (field [TL (point 0 0)]
 	    [BR (point 0 0)])
 
-     (define brush-box (box {find-or-create-brush the-brush-list "yellow" 'solid}))
+     (define brush-box (box {find-or-create-brush the-brush-list "white" 'solid}))
 
      (define costume* (new rectangle-costume%
 			   [actor this]
@@ -124,10 +124,10 @@
      (define/override {costume self} costume*)
 
      (define/override {activate! self}
-       (set-box! brush-box {find-or-create-brush the-brush-list "green" 'solid})
+       (set-box! brush-box {find-or-create-brush the-brush-list "blue" 'solid})
        {invalidate! self})
 
      (define/override {deactivate! self}
-       (set-box! brush-box {find-or-create-brush the-brush-list "yellow" 'solid})
+       (set-box! brush-box {find-or-create-brush the-brush-list "white" 'solid})
        {invalidate! self})
      )))

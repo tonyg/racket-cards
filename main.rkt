@@ -52,6 +52,8 @@
        (when morph
 	 (solve-constraints!)
 	 (define dc {get-dc this})
+	 {set-background dc "black"}
+	 {clear dc}
 	 {set-smoothing dc 'smoothed}
 	 (define costume {costume morph})
 	 {draw costume dc}))
