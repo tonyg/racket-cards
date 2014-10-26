@@ -84,10 +84,8 @@
 
 (define rectangle-dimensions-mixin
   (mixin () ()
+    (inherit-field TL BR)
     (super-new)
-
-    (field [TL (point 0 0)]
-	   [BR (point 0 0)])
 
     (define {point-TL self} TL)
     (define {point-BR self} BR)
@@ -107,26 +105,29 @@
     (define {value-VC self} (alias [value {point-CC self} y]))))
 
 (define rectangle-morph%
-  (class (rectangle-dimensions-mixin morph%)
-    (inherit-field TL BR)
-    (super-new)
+  (rectangle-dimensions-mixin
+   (class morph%
+     (super-new)
 
-    (define brush-box (box {find-or-create-brush the-brush-list "yellow" 'solid}))
+     (field [TL (point 0 0)]
+	    [BR (point 0 0)])
 
-    (define costume* (new rectangle-costume%
-			  [actor this]
-			  [top-left TL]
-			  [bottom-right BR]
-			  [pen (box {find-or-create-pen the-pen-list "black" 1 'solid})]
-			  [brush brush-box]))
+     (define brush-box (box {find-or-create-brush the-brush-list "yellow" 'solid}))
 
-    (define/override {costume self} costume*)
+     (define costume* (new rectangle-costume%
+			   [actor this]
+			   [top-left TL]
+			   [bottom-right BR]
+			   [pen (box {find-or-create-pen the-pen-list "black" 1 'solid})]
+			   [brush brush-box]))
 
-    (define/override {activate! self}
-      (set-box! brush-box {find-or-create-brush the-brush-list "green" 'solid})
-      {invalidate! self})
+     (define/override {costume self} costume*)
 
-    (define/override {deactivate! self}
-      (set-box! brush-box {find-or-create-brush the-brush-list "yellow" 'solid})
-      {invalidate! self})
-    ))
+     (define/override {activate! self}
+       (set-box! brush-box {find-or-create-brush the-brush-list "green" 'solid})
+       {invalidate! self})
+
+     (define/override {deactivate! self}
+       (set-box! brush-box {find-or-create-brush the-brush-list "yellow" 'solid})
+       {invalidate! self})
+     )))
